@@ -2,8 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 
 import {
   LayoutDashboard,
-  UserRound,
-  ShieldCheck,
   TrendingUp,
   BriefcaseBusiness,
   Building2,
@@ -23,16 +21,6 @@ function Sidebar() {
       icon: LayoutDashboard
     },
     {
-      name: "My Profile",
-      path: "/profile",
-      icon: UserRound
-    },
-    {
-      name: "Risk Assessment",
-      path: "/risk-assessment",
-      icon: ShieldCheck
-    },
-    {
       name: "Market",
       path: "/market",
       icon: TrendingUp
@@ -50,11 +38,6 @@ function Sidebar() {
     {
       name: "AI Recommendations",
       path: "/recommendations",
-      icon: Sparkles
-    },
-    {
-      name: "Why This Recommendation?",
-      path: "/xai",
       icon: Sparkles
     },
     {
@@ -97,7 +80,16 @@ function Sidebar() {
 
       </div>
 
-      <Link to="/" className="sidebar-item logout">
+      <Link
+        to="/login"
+        className="sidebar-item logout"
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          localStorage.removeItem("investmentProfile");
+          localStorage.removeItem("riskAssessment");
+        }}
+      >
         <LogOut size={18} />
         <span>Logout</span>
       </Link>

@@ -1,16 +1,122 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
 import Sidebar from "../components/Sidebar";
+import { userApi, recommendationApi } from "../services/api";
 
 import {
   TrendingUp,
   ShieldCheck,
   Sparkles,
   ArrowUpRight,
-  ArrowRight
+  ArrowRight,
+  UserRound
 } from "lucide-react";
 
 function Dashboard() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await userApi.getDashboard();
+
+      // If aiSuitability is not yet populated from backend, fall back to existing recommendations API
+      if (res && (res.aiSuitability === null || res.aiSuitability === undefined)) {
+        try {
+          const recRes = await recommendationApi.getRecommendations();
+          if (
+            recRes &&
+            recRes.isPersonalized &&
+            recRes.overallSuitability !== null &&
+            recRes.overallSuitability !== undefined
+          ) {
+            res.aiSuitability = recRes.overallSuitability;
+            res.aiSuitabilityLabel = "Overall Hybrid Score";
+          }
+        } catch {
+          // Gracefully continue with pending evaluation
+        }
+      }
+
+      setData(res);
+    } catch (err) {
+      console.error("Failed to load dashboard:", err);
+      setError(err?.data?.message || err?.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const formatHorizon = (horizon) => {
+    if (!horizon) return "Not Set";
+    const lower = horizon.toLowerCase();
+    if (lower === "short") return "Less than 3 Years";
+    if (lower === "medium") return "3–7 Years";
+    if (lower === "long") return "7+ Years";
+    return horizon;
+  };
+
+  if (loading) {
+    return (
+      <div className="dashboard-layout">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="dashboard-header">
+            <div>
+              <span className="page-label">OVERVIEW</span>
+              <h1>Loading Dashboard...</h1>
+              <p>Fetching your personalized financial overview...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-layout">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="dashboard-header">
+            <div>
+              <span className="page-label">OVERVIEW</span>
+              <h1>Unable to load dashboard</h1>
+              <p style={{ color: "#ef4444" }}>{error}</p>
+            </div>
+            <button onClick={fetchDashboardData} className="primary-btn">
+              Retry
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const userName = data?.user?.name || "Investor";
+  const riskAssessment = data?.riskAssessment;
+  const profile = data?.profile;
+  const riskCategory = riskAssessment?.category || riskAssessment?.riskCategory;
+  const riskScore = riskAssessment?.score ?? riskAssessment?.riskScore;
+  const horizon = profile?.investmentHorizon || profile?.horizon;
+  const profileCompletion = data?.profileCompletion ?? 0;
+  const aiSuitability = data?.aiSuitability;
+  const aiSuitabilityLabel = data?.aiSuitabilityLabel;
+
   return (
     <div className="dashboard-layout">
 
@@ -23,16 +129,36 @@ function Dashboard() {
           <div>
             <span className="page-label">OVERVIEW</span>
 
-            <h1>Good afternoon, Investor.</h1>
+            <h1>{getGreeting()}, {userName}.</h1>
 
             <p>
               Here's an overview of your investment profile.
             </p>
           </div>
 
-          <Link to="/risk-assessment" className="primary-btn">
-            Update Risk Profile
-          </Link>
+          <nav className="top-navbar-actions" aria-label="Quick Actions">
+            <Link
+              to="/risk-assessment"
+              className="navbar-icon-btn"
+              title="Risk Assessment"
+              aria-label="Risk Assessment"
+              id="dashboard-risk-assessment-btn"
+            >
+              <ShieldCheck size={20} />
+              <span className="navbar-tooltip">Risk Assessment</span>
+            </Link>
+
+            <Link
+              to="/profile"
+              className="navbar-icon-btn"
+              title="My Profile"
+              aria-label="My Profile"
+              id="dashboard-profile-btn"
+            >
+              <UserRound size={20} />
+              <span className="navbar-tooltip">My Profile</span>
+            </Link>
+          </nav>
 
         </div>
 
@@ -41,25 +167,46 @@ function Dashboard() {
 
           <div className="stat-card">
             <span>Risk Profile</span>
-            <h2>Moderate</h2>
+            <h2>{riskCategory || "Not Assessed"}</h2>
+            {riskScore !== undefined && riskScore !== null ? (
+              <small style={{ color: "#667085", fontSize: "12px", display: "block", marginTop: "4px" }}>
+                Score: {riskScore}/100
+              </small>
+            ) : (
+              <small style={{ color: "#9ca3af", fontSize: "12px", display: "block", marginTop: "4px" }}>
+                No assessment completed
+              </small>
+            )}
             <ShieldCheck />
           </div>
 
           <div className="stat-card">
             <span>Investment Horizon</span>
-            <h2>5–10 Years</h2>
+            <h2>{formatHorizon(horizon)}</h2>
             <TrendingUp />
           </div>
 
           <div className="stat-card">
             <span>AI Suitability</span>
-            <h2>87%</h2>
+            <h2>{aiSuitability !== null && aiSuitability !== undefined ? `${aiSuitability}%` : "—"}</h2>
+            <small
+              style={{
+                color: aiSuitability !== null && aiSuitability !== undefined ? "#047857" : "#9ca3af",
+                fontSize: "12px",
+                display: "block",
+                marginTop: "4px"
+              }}
+            >
+              {aiSuitability !== null && aiSuitability !== undefined
+                ? (aiSuitabilityLabel || "Overall Hybrid Score")
+                : "Pending evaluation"}
+            </small>
             <Sparkles />
           </div>
 
           <div className="stat-card">
             <span>Profile Completion</span>
-            <h2>82%</h2>
+            <h2>{profileCompletion}%</h2>
             <ArrowUpRight />
           </div>
 
@@ -79,14 +226,22 @@ function Dashboard() {
               <Sparkles size={22} />
             </div>
 
-            <p>
-              Based on your current profile, you have a moderate
-              risk tolerance and a medium-to-long investment horizon.
-              Diversified investments may align better with your profile.
-            </p>
+            {riskCategory && horizon ? (
+              <p>
+                Based on your current profile, you have a <strong>{riskCategory.toLowerCase()}</strong> risk tolerance and a <strong>{formatHorizon(horizon).toLowerCase()}</strong> investment horizon. Diversified investments may align better with your profile.
+              </p>
+            ) : riskCategory ? (
+              <p>
+                Based on your current profile, you have a <strong>{riskCategory.toLowerCase()}</strong> risk tolerance. Complete your profile horizon and goals to receive more tailored insights.
+              </p>
+            ) : (
+              <p>
+                You have not completed your risk assessment yet. Take the assessment to determine your risk profile and receive personalized investment insights.
+              </p>
+            )}
 
-            <Link to="/recommendations" className="text-link">
-              View recommendations
+            <Link to={riskAssessment ? "/recommendations" : "/risk-assessment"} className="text-link">
+              {riskAssessment ? "View recommendations" : "Start risk assessment"}
               <ArrowRight size={16} />
             </Link>
 

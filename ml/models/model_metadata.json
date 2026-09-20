@@ -1,0 +1,136 @@
+{
+  "selected_model_name": "linear_baseline",
+  "model_type": "LogisticRegression",
+  "hyperparameters": {
+    "C": 1.0,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 1000,
+    "n_jobs": null,
+    "penalty": "deprecated",
+    "random_state": 42,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "feature_names": [
+    "return_1d",
+    "return_5d",
+    "return_21d",
+    "volatility_21d",
+    "volatility_63d",
+    "volatility_ratio",
+    "sma_ratio_21_63",
+    "rsi_14",
+    "drawdown_63d",
+    "volume_ratio_21d"
+  ],
+  "target_definition": "21-day forward return discretized into 3 regimes (< -2%, [-2%, +3%], > +3%)",
+  "class_definitions": {
+    "0": "Drawdown Risk / Underperforming",
+    "1": "Neutral / Stable",
+    "2": "Favorable / Outperforming"
+  },
+  "train_period": "2015-03-31 to 2021-12-02",
+  "validation_period": "2022-01-03 to 2022-12-01",
+  "test_period": "2023-01-02 to 2024-12-02",
+  "random_seed": 42,
+  "validation_metrics": {
+    "accuracy": 0.3138075313807531,
+    "macro_f1": 0.3144368858654573,
+    "weighted_f1": 0.30735585726619796,
+    "tier0_recall": 0.20408163265306123,
+    "tier2_precision": 0.3617021276595745,
+    "per_class": {
+      "Drawdown Risk / Underperforming": {
+        "precision": 0.24390243902439024,
+        "recall": 0.20408163265306123,
+        "f1_score": 0.2222222222222222,
+        "support": 98
+      },
+      "Neutral / Stable": {
+        "precision": 0.34545454545454546,
+        "recall": 0.4418604651162791,
+        "f1_score": 0.3877551020408163,
+        "support": 86
+      },
+      "Favorable / Outperforming": {
+        "precision": 0.3617021276595745,
+        "recall": 0.3090909090909091,
+        "f1_score": 0.3333333333333333,
+        "support": 55
+      }
+    },
+    "drawdown_detection_recall (Tier 0)": 0.20408163265306123,
+    "favorable_momentum_precision (Tier 2)": 0.3617021276595745,
+    "confusion_matrix": [
+      [
+        20,
+        50,
+        28
+      ],
+      [
+        46,
+        38,
+        2
+      ],
+      [
+        16,
+        22,
+        17
+      ]
+    ],
+    "classification_report": "                                 precision    recall  f1-score   support\n\nDrawdown Risk / Underperforming       0.24      0.20      0.22        98\n               Neutral / Stable       0.35      0.44      0.39        86\n      Favorable / Outperforming       0.36      0.31      0.33        55\n\n                       accuracy                           0.31       239\n                      macro avg       0.32      0.32      0.31       239\n                   weighted avg       0.31      0.31      0.31       239\n"
+  },
+  "test_metrics": {
+    "accuracy": 0.41317365269461076,
+    "macro_f1": 0.29657898806834976,
+    "weighted_f1": 0.3484797518432376,
+    "tier0_recall": 0.08139534883720931,
+    "tier2_precision": 0.48333333333333334,
+    "per_class": {
+      "Drawdown Risk / Underperforming": {
+        "precision": 0.15217391304347827,
+        "recall": 0.08139534883720931,
+        "f1_score": 0.10606060606060606,
+        "support": 86
+      },
+      "Neutral / Stable": {
+        "precision": 0.43291139240506327,
+        "recall": 0.7916666666666666,
+        "f1_score": 0.5597381342062193,
+        "support": 216
+      },
+      "Favorable / Outperforming": {
+        "precision": 0.48333333333333334,
+        "recall": 0.1457286432160804,
+        "f1_score": 0.22393822393822393,
+        "support": 199
+      }
+    },
+    "drawdown_detection_recall (Tier 0)": 0.08139534883720931,
+    "favorable_momentum_precision (Tier 2)": 0.48333333333333334,
+    "confusion_matrix": [
+      [
+        7,
+        71,
+        8
+      ],
+      [
+        22,
+        171,
+        23
+      ],
+      [
+        17,
+        153,
+        29
+      ]
+    ],
+    "classification_report": "                                 precision    recall  f1-score   support\n\nDrawdown Risk / Underperforming       0.15      0.08      0.11        86\n               Neutral / Stable       0.43      0.79      0.56       216\n      Favorable / Outperforming       0.48      0.15      0.22       199\n\n                       accuracy                           0.41       501\n                      macro avg       0.36      0.34      0.30       501\n                   weighted avg       0.40      0.41      0.35       501\n"
+  }
+}

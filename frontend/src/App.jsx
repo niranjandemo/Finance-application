@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 
 import Home from "./pages/Home";
@@ -11,12 +12,17 @@ import Market from "./pages/Market";
 import Investments from "./pages/Investments";
 import Brokers from "./pages/Brokers";
 import Recommendations from "./pages/Recommendations";
-import XAI from "./pages/XAI";
 import Education from "./pages/Education";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    document.title = "InvestAI";
+  }, [location.pathname]);
+
   return (
     <Routes>
 
@@ -90,15 +96,6 @@ function App() {
         element={
           <ProtectedRoute>
             <Recommendations />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/xai"
-        element={
-          <ProtectedRoute>
-            <XAI />
           </ProtectedRoute>
         }
       />

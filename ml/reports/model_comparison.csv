@@ -1,0 +1,5 @@
+model,validation_accuracy,validation_macro_f1,validation_tier0_recall,validation_tier2_precision,test_accuracy,test_macro_f1,test_tier0_recall,test_tier2_precision
+naive_baseline,0.3598,0.1764,0.0,0.0,0.4311,0.2008,0.0,0.0
+linear_baseline,0.3138,0.3144,0.2041,0.3617,0.4132,0.2966,0.0814,0.4833
+primary_random_forest,0.2552,0.2491,0.051,0.2414,0.3114,0.3002,0.6628,0.481
+primary_gradient_boosting,0.2762,0.2361,0.0306,0.2182,0.3613,0.3494,0.4302,0.4697

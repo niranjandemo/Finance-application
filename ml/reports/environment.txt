@@ -1,0 +1,16 @@
+Python Version: 3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]
+OS: win32
+
+Package Versions:
+numpy: 2.5.3
+pandas: 3.0.5
+scikit-learn: 1.9.1
+scipy: 1.18.1
+joblib: 1.6.0
+shap: 0.52.0
+
+Random Seed: 42
+Dataset: ml/data/raw/nifty50_daily_2015_2024.csv
+Train Period: 2015-01-01 to 2021-12-31 (with 21-day embargo purge)
+Validation Period: 2022-01-01 to 2022-12-31 (with 21-day embargo purge)
+Test Period: 2023-01-01 to 2024-12-31
